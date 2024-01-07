@@ -1,6 +1,6 @@
 ﻿using HotelProject.BL.Exceptions;
 using HotelProject.BL.Interfaces;
-using HotelProject.BL.Model;
+using HotelProject.BL.Model.Customer;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -27,6 +27,42 @@ namespace HotelProject.BL.Managers
             catch(Exception ex)
             {
                 throw new CustomerManagerException("GetAllCustomer",ex);
+            }
+        }
+
+        public void UpdateCustomer(Customer customer)
+        {
+            try
+            {
+                _customerRepository.UpdateCustomer(customer);
+            }
+            catch (Exception ex)
+            {
+                throw new CustomerManagerException("DeleteCustomer", ex);
+            }
+        }
+
+        public void DeleteCustomer(int id)
+        {
+            try
+            {
+                _customerRepository.DeleteCustomer(id);
+            }
+            catch (Exception ex)
+            {
+                throw new CustomerManagerException("DeleteCustomer", ex);
+            }
+        }
+
+        public int AddCustomer(Customer customer)
+        {
+            try
+            {
+                return _customerRepository.AddCustomer(customer);
+            }
+            catch (Exception ex)
+            {
+                throw new CustomerManagerException("AddCustomer", ex);
             }
         }
     }

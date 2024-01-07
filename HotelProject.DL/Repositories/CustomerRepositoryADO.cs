@@ -1,5 +1,6 @@
 ﻿using HotelProject.BL.Interfaces;
 using HotelProject.BL.Model;
+using HotelProject.BL.Model.Customer;
 using HotelProject.DL.Exceptions;
 using System;
 using System.Collections.Generic;
@@ -62,7 +63,7 @@ namespace HotelProject.DL.Repositories
                 throw new CustomerRepositoryException("GetCustomer",ex);
             }
         }
-        public void AddCustomer(Customer customer)
+        public int AddCustomer(Customer customer)
         {
             try
             {
@@ -97,10 +98,12 @@ namespace HotelProject.DL.Repositories
                             cmd.ExecuteNonQuery();
                         }
                         transaction.Commit();
+                        return id;
                     }
                     catch(Exception ex)
                     {
                         transaction.Rollback();
+                        return 0;
                     }
                 }
             }
@@ -109,5 +112,87 @@ namespace HotelProject.DL.Repositories
                 throw new CustomerRepositoryException("AddCustomer", ex);
             }
         }
+        public void UpdateCustomer(Customer customer)
+        {
+            try
+            {
+                string customerSQL = "UPDATE Customer SET name=@name, email=@email, phone=@phone, address=@address WHERE id=@id";
+
+                using (SqlConnection conn = new SqlConnection(connectionString))
+                using (SqlCommand cmd = new SqlCommand(customerSQL, conn))
+                {
+                    conn.Open();
+                    SqlTransaction transaction = conn.BeginTransaction();
+                    cmd.Transaction = transaction;
+
+                    try
+                    {
+                        cmd.Parameters.AddWithValue("@name", customer.Name);
+                        cmd.Parameters.AddWithValue("@email", customer.ContactInfo.Email);
+                        cmd.Parameters.AddWithValue("@phone", customer.ContactInfo.Phone);
+                        cmd.Parameters.AddWithValue("@address", customer.ContactInfo.Address.ToAddressLine());
+                        cmd.Parameters.AddWithValue("@id", customer.Id);
+                        cmd.ExecuteNonQuery();
+
+                        // Update member table
+                        // You may want to consider different strategies here depending on your requirements.
+                        // For simplicity, I'm deleting all existing members and adding them again.
+                        string deleteMembersSQL = "DELETE FROM Member WHERE customerId=@customerId";
+                        cmd.CommandText = deleteMembersSQL;
+                        cmd.Parameters.AddWithValue("@customerId", customer.Id);
+                        cmd.ExecuteNonQuery();
+
+                        string addMemberSQL = "INSERT INTO Member(name, birthday, customerId, status) VALUES (@name, @birthday, @customerId, @status)";
+                        cmd.CommandText = addMemberSQL;
+
+                        foreach (Member member in customer.GetMembers())
+                        {
+                            cmd.Parameters.Clear();
+                            cmd.Parameters.AddWithValue("@name", member.Name);
+                            cmd.Parameters.AddWithValue("@birthday", member.BirthDay.ToDateTime(TimeOnly.MinValue));
+                            cmd.Parameters.AddWithValue("@customerId", customer.Id);
+                            cmd.Parameters.AddWithValue("@status", 1);
+                            cmd.ExecuteNonQuery();
+                        }
+
+                        transaction.Commit();
+                    }
+                    catch (Exception ex)
+                    {
+                        transaction.Rollback();
+                        throw;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new CustomerRepositoryException("UpdateCustomer", ex);
+            }
+        }
+        public void DeleteCustomer(int customerId)
+        {
+            try
+            {
+                string sql = "UPDATE Customer SET status = 0 WHERE id = @id; UPDATE Member SET status = 0 WHERE customerId = @id;";
+
+                using (SqlConnection conn = new SqlConnection(connectionString))
+                using (SqlCommand cmd = new SqlCommand(sql, conn))
+                {
+                    conn.Open();
+                    cmd.Parameters.AddWithValue("@id", customerId);
+                    int affectedRows = cmd.ExecuteNonQuery();
+
+                    if (affectedRows == 0)
+                    {
+                        throw new CustomerRepositoryException("No customer was found with the specified ID.");
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new CustomerRepositoryException("DeleteCustomer", ex);
+            }
+        }
+
     }
 }

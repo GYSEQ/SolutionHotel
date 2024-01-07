@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace HotelProject.BL.Model
+namespace HotelProject.BL.Model.Customer
 {
     public class Member
     {
@@ -17,7 +17,7 @@ namespace HotelProject.BL.Model
         private string _name;
         public string Name { get { return _name; } set { if (string.IsNullOrWhiteSpace(value)) throw new MemberException("name is empty"); _name = value; } }
         private DateOnly _birthDay;
-        public DateOnly BirthDay { get { return _birthDay; } set { if (value>DateOnly.FromDateTime(DateTime.Now)) throw new MemberException("birthday invalid"); _birthDay = value; } }
+        public DateOnly BirthDay { get { return _birthDay; } set { if (value > DateOnly.FromDateTime(DateTime.Now)) throw new MemberException("birthday invalid"); _birthDay = value; } }
 
         public override bool Equals(object? obj)
         {

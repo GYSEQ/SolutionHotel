@@ -1,5 +1,5 @@
 ﻿using HotelProject.BL.Managers;
-using HotelProject.BL.Model;
+using HotelProject.BL.Model.Customer;
 using HotelProject.DL.Repositories;
 using HotelProject.UI.CustomerWPF.Model;
 using HotelProject.Util;
@@ -33,25 +33,30 @@ namespace HotelProject.UI.CustomerWPF
         {
             InitializeComponent();
             customerManager = new CustomerManager(RepositoryFactory.CustomerRepository);       
-            customersUIs= new ObservableCollection<CustomerUI>(customerManager.GetCustomers(null).Select(x => new CustomerUI(x.Id, x.Name, x.ContactInfo.Email, x.ContactInfo.Phone, x.ContactInfo.Address.ToString(), x.GetMembers().Count)));
+            customersUIs= new ObservableCollection<CustomerUI>(customerManager.GetCustomers(null).Select(x => new CustomerUI(x.Id, x.Name, x.ContactInfo.Email, x.ContactInfo.Phone, x.ContactInfo.Address.ToAddressLine(), x.GetMembers().Count, new List<Member>(x.GetMembers()))));
             CustomerDataGrid.ItemsSource = customersUIs;
         }
 
         private void SearchButton_Click(object sender, RoutedEventArgs e)
         {
-            CustomerDataGrid.ItemsSource = new ObservableCollection<CustomerUI>(customerManager.GetCustomers(SearchTextBox.Text).Select(x => new CustomerUI(x.Id, x.Name, x.ContactInfo.Email, x.ContactInfo.Phone, x.ContactInfo.Address.ToString(), x.GetMembers().Count)));
+            CustomerDataGrid.ItemsSource = new ObservableCollection<CustomerUI>(customerManager.GetCustomers(SearchTextBox.Text).Select(x => new CustomerUI(x.Id, x.Name, x.ContactInfo.Email, x.ContactInfo.Phone, x.ContactInfo.Address.ToString(), x.GetMembers().Count, new List<Member>(x.GetMembers()))));
         }
 
         private void MenuItemAddCustomer_Click(object sender, RoutedEventArgs e)
         {
-            CustomerWindow w = new CustomerWindow(false,null);
+            CustomerWindow w = new CustomerWindow(false,null,customerManager);
             if (w.ShowDialog()==true)
                 customersUIs.Add(w.customerUI);
         }
 
         private void MenuItemDeleteCustomer_Click(object sender, RoutedEventArgs e)
         {
-
+            if (CustomerDataGrid.SelectedItem == null) MessageBox.Show("Customer not selected", "Delete");
+            else
+            {
+                customerManager.DeleteCustomer(((CustomerUI)CustomerDataGrid.SelectedItem).Id.Value);
+                customersUIs.Remove((CustomerUI)CustomerDataGrid.SelectedItem);
+            }
         }
 
         private void MenuItemUpdateCustomer_Click(object sender, RoutedEventArgs e)
@@ -59,7 +64,7 @@ namespace HotelProject.UI.CustomerWPF
             if (CustomerDataGrid.SelectedItem == null) MessageBox.Show("Customer not selected","Update");
             else
             {
-                CustomerWindow w = new CustomerWindow(true,(CustomerUI)CustomerDataGrid.SelectedItem);
+                CustomerWindow w = new CustomerWindow(true,(CustomerUI)CustomerDataGrid.SelectedItem, customerManager);
                 w.ShowDialog();
             }
         }

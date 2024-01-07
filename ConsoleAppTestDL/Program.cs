@@ -1,4 +1,5 @@
 ﻿using HotelProject.BL.Model;
+using HotelProject.BL.Model.Customer;
 using HotelProject.DL.Repositories;
 
 namespace ConsoleAppTestDL
