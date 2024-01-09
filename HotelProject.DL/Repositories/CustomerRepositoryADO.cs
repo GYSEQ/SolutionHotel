@@ -29,11 +29,11 @@ namespace HotelProject.DL.Repositories
                 string sql;
                 if (string.IsNullOrEmpty(filter))
                 {
-                    sql = "select t1.id,t1.email,t1.name customername,t1.address,t1.phone,t2.name membername,t2.birthday\r\nfrom customer t1 \r\nleft join (select * from member where status=1) t2 on t1.id=t2.customerId\r\nwhere t1.status=1";
+                    sql = "select t1.id,t1.email,t1.name customername,t1.address,t1.phone, t2.id AS memberid, t2.name membername,t2.birthday\r\nfrom customer t1 \r\nleft join (select * from member where status=1) t2 on t1.id=t2.customerId\r\nwhere t1.status=1";
                 }
                 else
                 {
-                    sql = "select t1.id,t1.email,t1.name customername,t1.address,t1.phone,t2.name membername,t2.birthday\r\nfrom customer t1 \r\nleft join (select * from member where status=1) t2 on t1.id=t2.customerId\r\nwhere t1.status=1 and (t1.id like @filter or t1.name like @filter or t1.email like @filter)";
+                    sql = "select t1.id,t1.email,t1.name customername,t1.address,t1.phone, t2.id AS memberid, t2.name membername,t2.birthday\r\nfrom customer t1 \r\nleft join (select * from member where status=1) t2 on t1.id=t2.customerId\r\nwhere t1.status=1 and (t1.id like @filter or t1.name like @filter or t1.email like @filter)";
                 }
                 using(SqlConnection conn = new SqlConnection(connectionString)) 
                 using(SqlCommand cmd = conn.CreateCommand())
@@ -52,7 +52,7 @@ namespace HotelProject.DL.Repositories
                             }
                             if (!reader.IsDBNull(reader.GetOrdinal("membername")))
                             {
-                                customers[id].AddMember(new Member((string)reader["membername"], DateOnly.FromDateTime((DateTime)reader["birthday"])));
+                                customers[id].AddMember(new Member((int)reader["memberid"], (string)reader["membername"], DateOnly.FromDateTime((DateTime)reader["birthday"])));
                             }                            
                         }
                     return customers.Values.ToList();

@@ -29,6 +29,7 @@ namespace HotelProject.UI.ActivityWPF
         private ActivityManager _activityManager;
         private CustomerManager _customerManager;
         private OrganizerManager _organizerManager;
+        private RegistrationManager _registrationManager;
         private List<OrganizerUI> organizers = new List<OrganizerUI>();
         private OrganizerUI _selectedOrganizer;
         private ActivityUI _selectedActivity;
@@ -41,6 +42,7 @@ namespace HotelProject.UI.ActivityWPF
             _activityManager = new ActivityManager(RepositoryFactory.ActivityRepository);
             _customerManager = new CustomerManager(RepositoryFactory.CustomerRepository);
             _organizerManager = new OrganizerManager(RepositoryFactory.OrganizerRepository);
+            _registrationManager = new RegistrationManager(RepositoryFactory.RegistrationRepository);
 
             foreach (Organizer organizer in _organizerManager.GetOrganizers())
             {
@@ -69,6 +71,7 @@ namespace HotelProject.UI.ActivityWPF
             _selectedActivity  = ((ActivityUI)DataGridActivities.SelectedItem);
             txtActiviteit.Content = _selectedActivity.Name;
             _registration.Activity = new Activity(_selectedActivity.Name, _selectedActivity.Description, _selectedActivity.Date, _selectedActivity.Spots, _selectedActivity.PriceAdult, _selectedActivity.PriceChild, _selectedActivity.Discount, _selectedActivity.Location, _selectedActivity.Duration, _selectedOrganizer.Id);
+            _registration.Activity.Id = _selectedActivity.Id;
         }
 
         private void DataGridMembers_MouseDoubleClick(object sender, MouseButtonEventArgs e)
@@ -89,6 +92,27 @@ namespace HotelProject.UI.ActivityWPF
             DataGridSelectedMembers.Items.Refresh();
             _registration.CalculateTotalCost();
             txtTotaal.Content = _registration.TotalCost;
+        }
+
+        private void btnRegister_Click(object sender, RoutedEventArgs e)
+        {
+            if (_registration.Activity == null)
+            {
+                MessageBox.Show("Selecteer een activiteit.");
+                return;
+            }
+            if (_registration.Members.Count == 0)
+            {
+                MessageBox.Show("Selecteer minstens 1 lid.");
+                return;
+            }
+            if (MessageBox.Show("Weet u zeker dat u wilt registreren?", "Registreren", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
+            {
+                _registration.CustomerId = 1;
+                _registrationManager.AddRegistration(_registration);
+                MessageBox.Show("Registratie succesvol.");
+                this.Close();
+            }
         }
     }
 }

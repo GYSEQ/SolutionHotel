@@ -17,13 +17,6 @@ namespace HotelProject.BL.Model.HotelActivities
             set => _id = value > 0 ? value : throw new RegistrationException("ID must be greater than 0.");
         }
 
-        private int _activityId;
-        public int ActivityId
-        {
-            get => _activityId;
-            set => _activityId = value > 0 ? value : throw new RegistrationException("ActivityId must be greater than 0.");
-        }
-
         private int _customerId;
         public int CustomerId
         {
@@ -53,7 +46,7 @@ namespace HotelProject.BL.Model.HotelActivities
 
         public void CalculateTotalCost()
         {
-            TotalCost = Members.Sum(m => m.GetAge() >= 12 ? Activity.PriceAdult : Activity.PriceChild);
+            TotalCost = Members.Sum(m => m.GetAge() >= 12 ? Activity.PriceAdult * ((100 - (decimal)Activity.Discount) / 100) : Activity.PriceChild * ((100 - (decimal)Activity.Discount) / 100));
         }
     }
 }

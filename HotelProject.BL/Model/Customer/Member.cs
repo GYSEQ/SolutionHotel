@@ -9,11 +9,15 @@ namespace HotelProject.BL.Model.Customer
 {
     public class Member
     {
-        public Member(string name, DateOnly birthDay)
+        public Member(int id, string name, DateOnly birthDay)
         {
             Name = name;
             BirthDay = birthDay;
+            Id = id;
         }
+
+        private int _id;
+        public int Id { get { return _id; } set { if (value < 0) throw new MemberException("id is invalid"); _id = value; } }
 
         private string _name;
         public string Name { get { return _name; } set { if (string.IsNullOrWhiteSpace(value)) throw new MemberException("name is empty"); _name = value; } }
