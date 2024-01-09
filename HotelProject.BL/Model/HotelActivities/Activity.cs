@@ -79,7 +79,14 @@ namespace HotelProject.BL.Model.HotelActivities
             set => _duration = value >= 0 ? value : throw new ActivityException("Duration cannot be negative.");
         }
 
-        public Activity(string name, int id, string description, DateTime date, int spots, decimal priceAdult, decimal priceChild, int discount , string location, int duration)
+        public int _organizerId;
+        public int OrganizerId
+        {
+            get => _organizerId;
+            set => _organizerId = value > 0 ? value : throw new ActivityException("Organizer ID must be greater than 0.");
+        }
+
+        public Activity(string name, int id, string description, DateTime date, int spots, decimal priceAdult, decimal priceChild, int discount , string location, int duration, int organizerId)
         {
             Name = name;
             Id = id;
@@ -91,6 +98,21 @@ namespace HotelProject.BL.Model.HotelActivities
             Discount = discount;
             Location = location;
             Duration = duration;
+            OrganizerId = organizerId;
+        }
+
+        public Activity(string name, string description, DateTime date, int spots, decimal priceAdult, decimal priceChild, int discount, string location, int duration, int organizerId)
+        {
+            Name = name;
+            Description = description;
+            Date = date;
+            Spots = spots;
+            PriceAdult = priceAdult;
+            PriceChild = priceChild;
+            Discount = discount;
+            Location = location;
+            Duration = duration;
+            OrganizerId = organizerId;
         }
     }
 }

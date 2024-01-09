@@ -10,5 +10,6 @@ namespace HotelProject.BL.Interfaces
     public interface IActivityRepository
     {
         public List<Activity> GetActivitiesByOrganizerId(int id);
+        public int AddActivity(Activity activity);
     }
 }

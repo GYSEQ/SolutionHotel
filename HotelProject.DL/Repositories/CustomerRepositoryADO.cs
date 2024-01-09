@@ -193,6 +193,5 @@ namespace HotelProject.DL.Repositories
                 throw new CustomerRepositoryException("DeleteCustomer", ex);
             }
         }
-
     }
 }

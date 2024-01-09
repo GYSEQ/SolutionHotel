@@ -10,6 +10,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\HotelProject.BL\HotelProject.BL.csproj" />
+    <ProjectReference Include="..\HotelProject.UI.Customer\HotelProject.UI.CustomerWPF.csproj" />
     <ProjectReference Include="..\HotelProject.Util\HotelProject.Util.csproj" />
   </ItemGroup>
 

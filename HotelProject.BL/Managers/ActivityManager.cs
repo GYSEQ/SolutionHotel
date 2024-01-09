@@ -29,5 +29,17 @@ namespace HotelProject.BL.Managers
                 throw new ActivityManagerException("GetActivitiesByOrganizerId",ex);
             }
         }
+
+        public int AddActivity(Activity activity)
+        {
+            try
+            {
+                return _activityRepository.AddActivity(activity);
+            }
+            catch(Exception ex)
+            {
+                throw new ActivityManagerException("AddActivity", ex);
+            }
+        }
     }
 }

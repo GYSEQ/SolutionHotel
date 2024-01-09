@@ -1,5 +1,6 @@
 ﻿using HotelProject.BL.Interfaces;
 using HotelProject.BL.Model.HotelActivities;
+using HotelProject.DL.Exceptions;
 using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
@@ -40,12 +41,49 @@ namespace HotelProject.DL.Repositories
                         (decimal)reader["price_child"],
                         (int)reader["discount"],
                         (string)reader["location"],
-                        (int)reader["duration"]
+                        (int)reader["duration"],
+                        id
                         )
                     );
                 }
             }
             return activities;
-        }   
+        }
+        
+        public int AddActivity(Activity activity)
+        {
+            string sql = "INSERT INTO activity (name, description, date, spots, price_adult, price_child, discount, location, duration, status, organizerId) output INSERTED.ID VALUES (@name, @description, @date, @spots, @price_adult, @price_child, @discount, @location, @duration, @status, @organizerId)";
+            using (SqlConnection conn = new SqlConnection(connectionString))
+            using (SqlCommand cmd = conn.CreateCommand())
+            {
+                conn.Open();
+                SqlTransaction transaction = conn.BeginTransaction();
+                try
+                {
+                    cmd.CommandText = sql;
+                    cmd.Transaction = transaction;
+                    cmd.Parameters.AddWithValue("@name", activity.Name);
+                    cmd.Parameters.AddWithValue("@description", activity.Description);
+                    cmd.Parameters.AddWithValue("@date", activity.Date);
+                    cmd.Parameters.AddWithValue("@spots", activity.Spots);
+                    cmd.Parameters.AddWithValue("@price_adult", activity.PriceAdult);
+                    cmd.Parameters.AddWithValue("@price_child", activity.PriceChild);
+                    cmd.Parameters.AddWithValue("@discount", activity.Discount);
+                    cmd.Parameters.AddWithValue("@location", activity.Location);
+                    cmd.Parameters.AddWithValue("@duration", activity.Duration);
+                    cmd.Parameters.AddWithValue("@status", 1);
+                    cmd.Parameters.AddWithValue("@organizerId", activity.OrganizerId);
+                    int id = (int)cmd.ExecuteScalar();
+
+                    transaction.Commit();
+                    return id;
+                }
+                catch (Exception ex)
+                {
+                    transaction.Rollback();
+                    throw new ActivityRepositoryException("AddActivity", ex);
+                }
+            }
+        }
     }
 }

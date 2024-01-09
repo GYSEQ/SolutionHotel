@@ -25,12 +25,14 @@ namespace HotelProject.UI.ActivityWPF
     public partial class DetailsWindow : Window
     {
         private ActivityManager activityManager;
+        OrganizerUI _organizerUI;
         private ObservableCollection<ActivityUI> activities = new ObservableCollection<ActivityUI>();
         public DetailsWindow(OrganizerUI org)
         {
             InitializeComponent();
+            _organizerUI = org;
             activityManager = new ActivityManager(RepositoryFactory.ActivityRepository);
-            foreach (Activity activity in activityManager.GetActivitiesByOrganizerId(org.Id))
+            foreach (Activity activity in activityManager.GetActivitiesByOrganizerId(_organizerUI.Id))
             {
                 activities.Add(new ActivityUI(activity.Id, activity.Name, activity.Description, activity.Date, activity.Spots, activity.PriceAdult, activity.PriceChild, activity.Discount, activity.Location, activity.Duration));
             }
@@ -39,8 +41,9 @@ namespace HotelProject.UI.ActivityWPF
 
         private void AddButton_Click(object sender, RoutedEventArgs e)
         {
-            NewActivity w = new NewActivity();
-            w.ShowDialog();
+            NewActivity w = new NewActivity(activityManager, _organizerUI);
+            if (w.ShowDialog() == true)
+            activities.Add(w._activityUI);
         }
 
         private void BackButton_Click(object sender, RoutedEventArgs e)

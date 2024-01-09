@@ -14,6 +14,7 @@ namespace HotelProject.BL.Model.Customer
             Name = name;
             BirthDay = birthDay;
         }
+
         private string _name;
         public string Name { get { return _name; } set { if (string.IsNullOrWhiteSpace(value)) throw new MemberException("name is empty"); _name = value; } }
         private DateOnly _birthDay;
@@ -29,6 +30,11 @@ namespace HotelProject.BL.Model.Customer
         public override int GetHashCode()
         {
             return HashCode.Combine(_name, _birthDay);
+        }
+
+        public int GetAge()
+        {
+            return (int)(DateTime.Today - _birthDay.ToDateTime(TimeOnly.MinValue)).TotalDays / 365;
         }
     }
 }

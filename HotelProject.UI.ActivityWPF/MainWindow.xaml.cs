@@ -26,5 +26,11 @@ namespace HotelProject.UI.ActivityWPF
             OrganizerWindow organizerWindow = new OrganizerWindow();
             organizerWindow.ShowDialog();
         }
+
+        private void btnRegister_Click(object sender, RoutedEventArgs e)
+        {
+            RegisterWindow registerWindow = new RegisterWindow();
+            registerWindow.ShowDialog();
+        }
     }
 }

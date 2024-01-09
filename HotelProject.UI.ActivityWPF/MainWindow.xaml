@@ -13,6 +13,6 @@
         </Grid.RowDefinitions>
 
         <Button Grid.Row="0" Content="Manage Activities" Name="btnManageActivities" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Margin="10" Click="btnManageActivities_Click"/>
-        <Button Grid.Row="1" Content="Register" Name="btnRegister" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Margin="10"/>
+        <Button Grid.Row="1" Content="Register" Name="btnRegister" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Margin="10" Click="btnRegister_Click"/>
     </Grid>
 </Window>
